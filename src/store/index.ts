@@ -7,6 +7,7 @@ import { listClawHubSkills, searchClawHub, getClawHubSkill, getClawHubSkillVersi
 import * as Platform from '../lib/platform'
 import { getOrCreateDeviceIdentity, clearDeviceIdentity, getDeviceToken, saveDeviceToken, clearDeviceToken } from '../lib/device-identity'
 import type { DeviceIdentity } from '../lib/device-identity'
+import { formatConnectionError } from '../lib/openclaw/connection-errors'
 
 /** Matches internal system sessions like agent:main:main, agent:clarissa:cron, etc. */
 /** Matches internal system sessions: agent:X:main, agent:X:cron, agent:X:cron:*, agent:X:subagent:* */
@@ -2010,7 +2011,7 @@ export const useStore = create<AppState>()(
             return get().connect()
           }
 
-          const connectionError = err instanceof Error ? err.message : 'Connection failed'
+          const connectionError = formatConnectionError(err)
           set({ connecting: false, connected: false, connectionError })
           throw err
         }
