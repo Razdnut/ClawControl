@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useStore } from '../store'
 import { getPlatform, openExternal } from '../lib/platform'
+import { buildAllowedOriginsCommand, getOriginAllowlistCandidates } from '../lib/openclaw/connection-errors'
 import { clearDeviceToken } from '../lib/device-identity'
 
 export function SettingsModal() {
@@ -250,8 +251,13 @@ export function SettingsModal() {
     <div style={{ marginTop: '8px', fontSize: '12px', lineHeight: '1.5' }}>
       Your ClawControl origin must be allowed on the server. Run this on your OpenClaw host:
       <code style={{ display: 'block', padding: '8px', background: 'var(--bg-primary)', borderRadius: '6px', marginTop: '6px', fontSize: '11px', wordBreak: 'break-all' }}>
-        {`openclaw config set gateway.controlUi.allowedOrigins '["${window.location.origin}"]'`}
+        {buildAllowedOriginsCommand(window.location.origin)}
       </code>
+      {getOriginAllowlistCandidates(window.location.origin).length > 1 && (
+        <span style={{ display: 'block', marginTop: '4px' }}>
+          Added localhost http(s) fallbacks as some gateways reject custom schemes like <code>app://</code>.
+        </span>
+      )}
       <span style={{ display: 'block', marginTop: '4px' }}>Then restart the gateway for the change to take effect.</span>
       <a
         href="#"
